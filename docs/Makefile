@@ -14,7 +14,7 @@
 
 .DEFAULT_GOAL := all
 
-FLAGS += -interaction="nonstopmode" -output-directory="build/"
+TEXFLAGS += -interaction="nonstopmode" -output-directory="build/"
 
 DEEP_CLEAN += $(foreach pdf,$(wildcard *.pdf),rm $(pdf);)
 
@@ -31,7 +31,7 @@ deep-clean : clean
 	$(DEEP_CLEAN)
 
 $(docs) : %.pdf : %.tex build/
-	pdflatex $(FLAGS) $<
+	pdflatex $(TEXFLAGS) $<
 	mv build/$*.pdf $@
 
 build/ :

@@ -15,8 +15,9 @@
 
 #include <stdio.h>
 
-#include <S_main.h>
 #include <S_shell.h>
+
+#include <S_main.h>
 
 char *S_execname;
 

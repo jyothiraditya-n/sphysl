@@ -18,7 +18,10 @@
 
 #include <LS_streq.h>
 
+#include <S_consts.h>
 #include <S_main.h>
+#include <S_strip.h>
+
 #include <S_shell.h>
 
 void S_shell() {
@@ -27,9 +30,10 @@ void S_shell() {
 	while(!exit_condition) {
 		printf("%s> ", S_execname);
 
-		char input_buffer[4096];
-		fgets(input_buffer, 4096, stdin);
+		char input[S_BUFSIZE];
+		fgets(input, S_BUFSIZE, stdin);
+		S_strip(input);
 
-		if(LS_streq(input_buffer, "exit")) exit_condition = true;
+		if(LS_streq(input, "exit")) exit_condition = true;
 	}
 }
