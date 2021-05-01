@@ -20,6 +20,36 @@
 #include <LS_rand.h>
 #include <LS_pipe.h>
 
+int test(LS_pipe_t *pipe, size_t test_size) {
+	void *data[test_size];
+
+	for(size_t i = 0; i < test_size; i++) {
+		data[i] = LS_randp();
+		void *value = data[i];
+
+		LS_pframe_t *ret = LS_pipe(pipe, value);
+		if(!ret) return 1;
+
+		printf("LS_pipe(pipe, %p);\n", value);
+	}
+
+	printf("\n");
+
+	for(size_t i = 0; i < test_size; i++) {
+		void *ret_value = LS_pull(pipe);
+		printf("LS_pop(pipe): %p\n", ret_value);
+
+		void *value = data[i];
+
+		if(ret_value != value) {
+			printf("\n%p != %p\n\n", ret_value, value);
+			return 2;
+		}
+	}
+
+	return 0;
+}
+
 int main(int argc, char **argv) {
 	if(argc > 1) {
 		printf("%s: Error: Too many arguments.\n", argv[0]);
@@ -36,41 +66,20 @@ int main(int argc, char **argv) {
 	time_t now;
 	srand((unsigned) time(&now));
 
-	while(1) {
-		int total = (4 + (10 - LS_sizeof_pipe(pipe)));
-		int op = rand() % total;
+	for(size_t i = 1; i < 10; i++) {
+		int ret = test(pipe, i);
 
-		if(op == 0) {
-			LS_free_pipe(pipe);
-
-			printf("LS_free_pipe(pipe);\n");
+		if(ret == 1) {
+			printf("%s: Error: Cannot allocate memory.\n", argv[0]);
+			return 3;
 		}
 
-		else if(op == 1) {
-			size_t return_val = LS_sizeof_pipe(pipe);
-
-			printf("LS_sizeof_pipe(pipe) = %zu;\n", return_val);
+		if(ret == 2) {
+			printf("%s: Error: Library is faulty.\n", argv[0]);
+			return 4;
 		}
 
-		else if(op == total - 1) {
-			void *return_val = LS_pull(pipe);
-
-			printf("LS_pull(pipe) = %p;\n", return_val);
-		}
-
-		else {
-			void *operand = LS_randp();
-			LS_pframe_t *ret = LS_pipe(pipe, operand);
-
-			if(!ret) {
-				printf("%s: Error running tasks.\n",
-					argv[0]);
-
-				return 3;
-			}
-
-			printf("LS_pipe(pipe, %p);\n", operand);
-		}
+		printf("\n");
 	}
 
 	return 0;
