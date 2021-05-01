@@ -13,21 +13,30 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <https://www.gnu.org/licenses/>. */
 
+#include <signal.h>
 #include <stdio.h>
 
+#include <S_signal.h>
 #include <S_shell.h>
 
 #include <S_main.h>
 
-char *S_execname;
+char *S_exec_name;
+
+bool S_interactive_mode;
 
 int S_main(int argc, char **argv) {
-	S_execname = argv[0];
+	S_exec_name = argv[0];
+	S_interactive_mode = true;
 
 	if(argc > 1) {
-		printf("%s: Error: Too many arguments.\n", S_execname);
+		printf("%s: Error: Too many arguments.\n", S_exec_name);
 		return 1;
 	}
+
+	signal(SIGABRT, S_handle_sigabrt);
+	signal(SIGINT, S_handle_sigint);
+	signal(SIGTERM, S_handle_sigterm);
 
 	S_shell();
 

@@ -13,10 +13,14 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <https://www.gnu.org/licenses/>. */
 
+#include <stdbool.h>
+
 #ifndef S_MAIN_H
 #define S_MAIN_H
 
-extern char *S_execname;
+extern char *S_exec_name;
+
+extern bool S_interactive_mode;
 
 extern int S_main(int argc, char **argv);
 

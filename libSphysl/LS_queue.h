@@ -14,6 +14,7 @@
  * this program. If not, see <https://www.gnu.org/licenses/>. */
 
 #include <stddef.h>
+#include <pthread.h>
 
 #include <LS_pipe.h>
 
@@ -30,6 +31,8 @@ typedef struct {
 typedef struct {
 	LS_pipe_t *pipe;
 
+	pthread_t thread;
+
 } LS_queue_t;
 
 extern LS_queue_t *LS_alloc_queue();
@@ -39,7 +42,11 @@ extern size_t LS_sizeof_queue(LS_queue_t *queue);
 extern LS_queuet_t *LS_enqueue(LS_queue_t *queue, void *input, void *output,
 	void *(*function)(void *));
 
-extern void LS_do(LS_queue_t *queue, size_t num);
-extern void LS_finish(LS_queue_t *queue);
+extern void LS_do(LS_queue_t *queue);
+
+extern int LS_do_p(LS_queue_t *queue);
+extern int LS_stop(LS_queue_t *queue);
+
+extern void *_LS_do_p(void *input);
 
 #endif

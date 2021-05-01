@@ -28,7 +28,7 @@ void S_shell() {
 	bool exit_condition = false;
 
 	while(!exit_condition) {
-		printf("%s> ", S_execname);
+		printf("%s> ", S_exec_name);
 
 		char input[S_BUFSIZE];
 		fgets(input, S_BUFSIZE, stdin);

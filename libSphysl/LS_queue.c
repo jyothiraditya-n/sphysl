@@ -58,19 +58,7 @@ LS_queuet_t *LS_enqueue(LS_queue_t *queue, void *input, void *output,
 	return task;
 }
 
-void LS_do(LS_queue_t *queue, size_t num) {
-	size_t total = LS_sizeof_pipe(queue -> pipe);
-	if(num > total) num = total;
-
-	for(size_t i = 0; i < num; i++) {
-		LS_queuet_t *task = (LS_queuet_t *) LS_pull(queue -> pipe);
-		task -> output = task -> function(task -> input);
-	}
-
-	return;
-}
-
-void LS_finish(LS_queue_t *queue) {
+void LS_do(LS_queue_t *queue) {
 	size_t total = LS_sizeof_pipe(queue -> pipe);
 	
 	for(size_t i = 0; i < total; i++) {
@@ -79,4 +67,29 @@ void LS_finish(LS_queue_t *queue) {
 	}
 
 	return;
+}
+
+int LS_do_p(LS_queue_t *queue) {
+	int ret = pthread_create(&queue -> thread, 0, _LS_do_p, (void *) queue);
+	return ret;
+}
+
+void *_LS_do_p(void *input) {
+	LS_queue_t *queue = (LS_queue_t *) input;
+
+	size_t total = LS_sizeof_pipe(queue -> pipe);
+	
+	for(size_t i = 0; i < total; i++) {
+		LS_queuet_t *task = (LS_queuet_t *) LS_pull(queue -> pipe);
+		task -> output = task -> function(task -> input);
+	}
+
+	return 0;
+}
+
+int LS_stop(LS_queue_t *queue) {
+	void *exit;
+	int ret = pthread_join(queue -> thread, &exit);
+
+	return ret;
 }

@@ -28,7 +28,7 @@ DEEP_CLEAN += $(foreach lib,$(wildcard *.a),rm $(lib);)
 
 objs += $(patsubst %.c,%.o,$(wildcard *.c) $(wildcard sources/*.c))
 progs += $(patsubst %.c,%$(EXT),$(wildcard *.c))
-libs += -lSphysl
+libs += -lSphysl -lpthread
 
 existing_progs += $(foreach prog,$(progs),$(wildcard $(prog)))
 
