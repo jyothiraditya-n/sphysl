@@ -37,31 +37,39 @@ int main(int argc, char **argv) {
 	srand((unsigned) time(&now));
 
 	while(1) {
-		int op = rand() % 4;
+		int total = (4 + (10 - LS_sizeof_stack(stack)));
+		int op = rand() % total;
 
 		if(op == 0) {
 			LS_free_stack(stack);
 
-			printf("LS_free_stack(stack)\n");
+			printf("LS_free_stack(stack);\n");
 		}
 
 		else if(op == 1) {
 			size_t return_val = LS_sizeof_stack(stack);
 
-			printf("LS_sizeof_stack(stack) = %zu\n", return_val);
+			printf("LS_sizeof_stack(stack) = %zu;\n", return_val);
 		}
 
-		else if(op == 2) {
-			void *operand = LS_randp();
-			LS_push(stack, operand);
+		else if(op == total - 1) {
+			void *return_val = LS_pop(stack);
 
-			printf("LS_push(stack, %p)\n", operand);
+			printf("LS_pop(stack) = %p;\n", return_val);
 		}
 
 		else {
-			void *return_val = LS_pop(stack);
+			void *operand = LS_randp();
+			LS_sframe_t *ret = LS_push(stack, operand);
 
-			printf("LS_pop(stack) = %p\n", return_val);
+			if(!ret) {
+				printf("%s: Error running tasks.\n",
+					argv[0]);
+
+				return 3;
+			}
+
+			printf("LS_push(stack, %p);\n", operand);
 		}
 	}
 

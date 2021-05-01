@@ -37,31 +37,39 @@ int main(int argc, char **argv) {
 	srand((unsigned) time(&now));
 
 	while(1) {
-		int op = rand() % 4;
+		int total = (4 + (10 - LS_sizeof_pipe(pipe)));
+		int op = rand() % total;
 
 		if(op == 0) {
 			LS_free_pipe(pipe);
 
-			printf("LS_free_pipe(pipe)\n");
+			printf("LS_free_pipe(pipe);\n");
 		}
 
 		else if(op == 1) {
 			size_t return_val = LS_sizeof_pipe(pipe);
 
-			printf("LS_sizeof_pipe(pipe) = %zu\n", return_val);
+			printf("LS_sizeof_pipe(pipe) = %zu;\n", return_val);
 		}
 
-		else if(op == 2) {
-			void *operand = LS_randp();
-			LS_pipe(pipe, operand);
+		else if(op == total - 1) {
+			void *return_val = LS_pull(pipe);
 
-			printf("LS_pipe(pipe, %p)\n", operand);
+			printf("LS_pull(pipe) = %p;\n", return_val);
 		}
 
 		else {
-			void *return_val = LS_pull(pipe);
+			void *operand = LS_randp();
+			LS_pframe_t *ret = LS_pipe(pipe, operand);
 
-			printf("LS_pull(pipe) = %p\n", return_val);
+			if(!ret) {
+				printf("%s: Error running tasks.\n",
+					argv[0]);
+
+				return 3;
+			}
+
+			printf("LS_pipe(pipe, %p);\n", operand);
 		}
 	}
 

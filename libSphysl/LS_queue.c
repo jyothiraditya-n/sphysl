@@ -34,8 +34,6 @@ void LS_free_queue(LS_queue_t *queue) {
 	LS_free_pipe(queue -> pipe);
 	free(queue -> pipe);
 
-	free(queue);
-
 	return;
 }
 
@@ -43,53 +41,85 @@ size_t LS_sizeof_queue(LS_queue_t *queue) {
 	return LS_sizeof_pipe(queue -> pipe);
 }
 
-LS_queuet_t *LS_enqueue(LS_queue_t *queue, void *input, void *output,
-	void *(*function)(void *))
+LS_qtask_t *LS_enqueue(LS_queue_t *queue, int (*func)(void *),
+	void *arg)
 {
-	LS_queuet_t *task = malloc(sizeof(LS_queuet_t));
+	LS_qtask_t *task = malloc(sizeof(LS_qtask_t));
 	if(!task) return 0;
 
-	if(!LS_pipe(queue -> pipe, (void *) task)) return 0;
+	LS_pframe_t *ret = LS_pipe(queue -> pipe, (void *) task);
+	if(!ret) return 0;
 
-	task -> input = input;
-	task -> output = output;
-	task -> function = function;
+	task -> func = func;
+	task -> arg = arg;
 
 	return task;
 }
 
-void LS_do(LS_queue_t *queue) {
-	size_t total = LS_sizeof_pipe(queue -> pipe);
-	
-	for(size_t i = 0; i < total; i++) {
-		LS_queuet_t *task = (LS_queuet_t *) LS_pull(queue -> pipe);
-		task -> output = task -> function(task -> input);
-	}
+int LS_finish(LS_queue_t *queue) {
+	LS_qtask_t *task = (LS_qtask_t *) LS_pull(queue -> pipe);
 
-	return;
-}
+	while(task) {
+		int ret = task -> func(task -> arg);
+		
+		if(ret) {
+			queue -> exit_status = ret;
+			return 1;
+		}
 
-int LS_do_p(LS_queue_t *queue) {
-	int ret = pthread_create(&queue -> thread, 0, _LS_do_p, (void *) queue);
-	return ret;
-}
+		free(task);
 
-void *_LS_do_p(void *input) {
-	LS_queue_t *queue = (LS_queue_t *) input;
-
-	size_t total = LS_sizeof_pipe(queue -> pipe);
-	
-	for(size_t i = 0; i < total; i++) {
-		LS_queuet_t *task = (LS_queuet_t *) LS_pull(queue -> pipe);
-		task -> output = task -> function(task -> input);
+		task = (LS_qtask_t *) LS_pull(queue -> pipe);
 	}
 
 	return 0;
 }
 
-int LS_stop(LS_queue_t *queue) {
+int LS_finish_p(LS_queue_t *queue) {
+	int ret = pthread_create(&queue -> thread, 0, _LS_finish_p,
+		(void *) queue);
+	
+	if(ret) {
+		queue -> pthread_create = ret;
+		return 2;
+	}
+
+	return 0;
+}
+
+void *_LS_finish_p(void *arg) {
+	LS_queue_t *queue = (LS_queue_t *) arg;
+
+	LS_qtask_t *task = (LS_qtask_t *) LS_pull(queue -> pipe);
+
+	while(task) {
+		int ret = task -> func(task -> arg);
+		
+		if(ret) {
+			queue -> exit_status = ret;
+			return (void *) 1;
+		}
+
+		free(task);
+
+		task = (LS_qtask_t *) LS_pull(queue -> pipe);
+	}
+
+	return 0;
+}
+
+int LS_wait4(LS_queue_t *queue) {
 	void *exit;
 	int ret = pthread_join(queue -> thread, &exit);
 
-	return ret;
+	if(ret) {
+		queue -> pthread_join = ret;
+		return 3;
+	}
+
+	if(exit) {
+		return 1;
+	}
+
+	return 0;
 }

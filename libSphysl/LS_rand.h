@@ -20,11 +20,11 @@
 
 #if UINTPTR_MAX == 0xFFFFFFFF
 
-#define LS_rand() (size_t) rand()
+#define LS_rand() ((size_t) rand())
 
 #elif UINTPTR_MAX == 0xFFFFFFFFFFFFFFFF
 
-#define LS_rand() (size_t) rand() + ((size_t) rand() << 32)
+#define LS_rand() ((size_t) rand() + ((size_t) rand() << 32))
 
 #endif
 

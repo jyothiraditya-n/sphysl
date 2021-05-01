@@ -22,16 +22,19 @@
 #define LS_QUEUE_H
 
 typedef struct {
-	void *input;
-	void *output;
-	void *(*function)(void *);
+	int (*func)(void *);
+	void *arg;
 
-} LS_queuet_t;
+} LS_qtask_t;
 
 typedef struct {
 	LS_pipe_t *pipe;
 
 	pthread_t thread;
+
+	int exit_status;
+	int pthread_create;
+	int pthread_join;
 
 } LS_queue_t;
 
@@ -39,14 +42,13 @@ extern LS_queue_t *LS_alloc_queue();
 extern void LS_free_queue(LS_queue_t *queue);
 extern size_t LS_sizeof_queue(LS_queue_t *queue);
 
-extern LS_queuet_t *LS_enqueue(LS_queue_t *queue, void *input, void *output,
-	void *(*function)(void *));
+extern LS_qtask_t *LS_enqueue(LS_queue_t *queue, int (*func)(void *),
+	void *arg);
 
-extern void LS_do(LS_queue_t *queue);
+extern int LS_finish(LS_queue_t *queue);
+extern int LS_finish_p(LS_queue_t *queue);
+extern int LS_wait4(LS_queue_t *queue);
 
-extern int LS_do_p(LS_queue_t *queue);
-extern int LS_stop(LS_queue_t *queue);
-
-extern void *_LS_do_p(void *input);
+extern void *_LS_finish_p(void *arg);
 
 #endif

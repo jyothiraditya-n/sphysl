@@ -56,6 +56,8 @@ LS_pframe_t *LS_pipe(LS_pipe_t *pipe, void *data) {
 	LS_pframe_t *new_frame = malloc(sizeof(LS_pframe_t));
 	if(!new_frame) return 0;
 
+	if(pipe -> in_frame) pipe -> in_frame -> frame_behind = new_frame;
+
 	new_frame -> frame_ahead = pipe -> in_frame;
 	new_frame -> frame_behind = 0;
 	new_frame -> data = data;
