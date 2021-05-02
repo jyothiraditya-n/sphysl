@@ -17,9 +17,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include <LS_rand.h>
 #include <LS_stack.h>
-
-#include <S_rand.h>
 
 int test(LS_stack_t *stack, size_t test_size) {
 	void *data[test_size];
@@ -27,7 +26,7 @@ int test(LS_stack_t *stack, size_t test_size) {
 	size_t size = 0;
 
 	for(size_t i = 0; i < test_size; i++) {
-		data[i] = S_randp();
+		data[i] = LS_randp();
 		void *value = data[i];
 
 		LS_sframe_t *ret = LS_push(stack, value);

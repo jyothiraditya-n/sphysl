@@ -20,8 +20,7 @@
 #include <time.h>
 
 #include <LS_queue.h>
-
-#include <S_rand.h>
+#include <LS_rand.h>
 
 bool is_prime(size_t value) {
 	for(size_t i = 2; i < value; i += 2) {
@@ -45,13 +44,13 @@ int func(void *input) {
 
 int test(LS_queue_t *queue1, LS_queue_t *queue2, size_t test_size) {
 	for(size_t i = 0; i < test_size; i++) {
-		void *prime = S_randp_in(1, 1000);
+		void *prime = LS_randp_in(1, 1000);
 
 		printf("LS_enqueue(queue1, func, %zu);\n", (size_t) prime);
 		LS_qtask_t *ret = LS_enqueue(queue1, func, prime);
 		if(!ret) return 1;
 
-		prime = S_randp_in(1, 1000);
+		prime = LS_randp_in(1, 1000);
 
 		printf("LS_enqueue(queue2, func, %zu);\n", (size_t) prime);
 		ret = LS_enqueue(queue2, func, prime);

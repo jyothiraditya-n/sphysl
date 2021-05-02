@@ -16,21 +16,21 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#ifndef S_RAND_H
+#ifndef LS_RAND_H
 
 #if UINTPTR_MAX == 0xFFFFFFFF
 
-#define S_rand() ((size_t) rand())
+#define LS_rand() ((size_t) rand())
 
 #elif UINTPTR_MAX == 0xFFFFFFFFFFFFFFFF
 
-#define S_rand() ((size_t) rand() + ((size_t) rand() << 32))
+#define LS_rand() ((size_t) rand() + ((size_t) rand() << 32))
 
 #endif
 
-#define S_rand_in(lim1, lim2) (lim1 + (S_rand() % (lim2 - lim1)))
+#define LS_rand_in(lim1, lim2) (lim1 + (LS_rand() % (lim2 - lim1)))
 
-#define S_randp() (void *) S_rand()
-#define S_randp_in(lim1, lim2) (void *) S_rand_in(lim1, lim2)
+#define LS_randp() (void *) LS_rand()
+#define LS_randp_in(lim1, lim2) (void *) LS_rand_in(lim1, lim2)
 
 #endif

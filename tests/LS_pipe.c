@@ -18,8 +18,7 @@
 #include <time.h>
 
 #include <LS_pipe.h>
-
-#include <S_rand.h>
+#include <LS_rand.h>
 
 int test(LS_pipe_t *pipe, size_t test_size) {
 	void *data[test_size];
@@ -27,7 +26,7 @@ int test(LS_pipe_t *pipe, size_t test_size) {
 	size_t size = 0;
 
 	for(size_t i = 0; i < test_size; i++) {
-		data[i] = S_randp();
+		data[i] = LS_randp();
 		void *value = data[i];
 
 		LS_pframe_t *ret = LS_pipe(pipe, value);
