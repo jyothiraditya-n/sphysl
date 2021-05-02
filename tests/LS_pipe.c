@@ -17,32 +17,51 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include <LS_rand.h>
 #include <LS_pipe.h>
+
+#include <S_rand.h>
 
 int test(LS_pipe_t *pipe, size_t test_size) {
 	void *data[test_size];
 
+	size_t size = 0;
+
 	for(size_t i = 0; i < test_size; i++) {
-		data[i] = LS_randp();
+		data[i] = S_randp();
 		void *value = data[i];
 
 		LS_pframe_t *ret = LS_pipe(pipe, value);
 		if(!ret) return 1;
 
 		printf("LS_pipe(pipe, %p);\n", value);
+		size++;
+
+		if(pipe -> size != size) {
+			printf("\npipe -> size != size\n");
+			printf("%zu != %zu\n\n", pipe -> size, size);
+
+			return 2;
+		}
 	}
 
 	printf("\n");
 
 	for(size_t i = 0; i < test_size; i++) {
 		void *ret_value = LS_pull(pipe);
-		printf("LS_pop(pipe): %p\n", ret_value);
+		printf("LS_pull(pipe): %p\n", ret_value);
+		size--;
 
 		void *value = data[i];
 
 		if(ret_value != value) {
 			printf("\n%p != %p\n\n", ret_value, value);
+			return 2;
+		}
+
+		if(pipe -> size != size) {
+			printf("\npipe -> size != size\n");
+			printf("%zu != %zu\n\n", pipe -> size, size);
+
 			return 2;
 		}
 	}
@@ -81,6 +100,10 @@ int main(int argc, char **argv) {
 
 		printf("\n");
 	}
+
+	printf("%s: Library functions correctly.\n", argv[0]);
+
+	LS_free_pipe(pipe);
 
 	return 0;
 }

@@ -17,24 +17,29 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include <LS_rand.h>
 #include <LS_stack.h>
 
-int test(LS_stack_t *push, size_t test_size) {
+#include <S_rand.h>
+
+int test(LS_stack_t *stack, size_t test_size) {
 	void *data[test_size];
 
+	size_t size = 0;
+
 	for(size_t i = 0; i < test_size; i++) {
-		data[i] = LS_randp();
+		data[i] = S_randp();
 		void *value = data[i];
 
-		LS_sframe_t *ret = LS_push(push, value);
+		LS_sframe_t *ret = LS_push(stack, value);
 		if(!ret) return 1;
 
 		printf("LS_push(stack, %p);\n", value);
+		size++;
 
 		if((size_t) data[i] % 2) {
-			void *ret_value = LS_pop(push);
+			void *ret_value = LS_pop(stack);
 			printf("\nLS_pop(stack): %p\n", ret_value);
+			size--;
 
 			if(ret_value != value) {
 				printf("\n%p != %p\n\n", ret_value, value);
@@ -44,18 +49,33 @@ int test(LS_stack_t *push, size_t test_size) {
 			printf("\n");
 			i--;
 		}
+
+		if(stack -> size != size) {
+			printf("\nstack -> size != size\n");
+			printf("%zu != %zu\n\n", stack -> size, size);
+
+			return 2;
+		}
 	}
 
 	printf("\n");
 
 	for(size_t i = 1; i <= test_size; i++) {
-		void *ret_value = LS_pop(push);
+		void *ret_value = LS_pop(stack);
 		printf("LS_pop(stack): %p\n", ret_value);
+		size--;
 
 		void *value = data[test_size - i];
 
 		if(ret_value != value) {
 			printf("\n%p != %p\n\n", ret_value, value);
+			return 2;
+		}
+
+		if(stack -> size != size) {
+			printf("\nstack -> size != size\n");
+			printf("%zu != %zu\n\n", stack -> size, size);
+
 			return 2;
 		}
 	}
@@ -94,6 +114,10 @@ int main(int argc, char **argv) {
 
 		printf("\n");
 	}
+
+	printf("%s: Library functions correctly.\n", argv[0]);
+
+	LS_free_stack(stack);
 
 	return 0;
 }

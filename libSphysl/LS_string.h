@@ -13,10 +13,13 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef LS_CONSTS_H
-#define LS_CONSTS_H
+#include <stdbool.h>
 
-#define LS_VERSION 0
-#define LS_SUBVERSION 0
+#ifndef LS_STRING_H
+#define LS_STRING_H
+
+extern bool LS_streq(const char *str1, const char *str2);
+
+extern char *LS_strip(const char *string);
 
 #endif

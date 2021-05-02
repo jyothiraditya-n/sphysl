@@ -23,7 +23,8 @@ LS_stack_t *LS_alloc_stack() {
 	if(!stack) return 0;
 
 	stack -> current_frame = 0;
-	stack -> num_frames = 0;
+
+	stack -> size = 0;
 
 	return stack;
 }
@@ -40,14 +41,13 @@ void LS_free_stack(LS_stack_t *stack) {
 		current_frame = frame_below;
 	}
 
-	stack -> current_frame = 0;
-	stack -> num_frames = 0;
+	free(stack);
 
 	return;
 }
 
 size_t LS_sizeof_stack(LS_stack_t *stack) {
-	return stack -> num_frames;
+	return stack -> size;
 }
 
 LS_sframe_t *LS_push(LS_stack_t *stack, void *data) {
@@ -58,7 +58,8 @@ LS_sframe_t *LS_push(LS_stack_t *stack, void *data) {
 	new_frame -> data = data;
 
 	stack -> current_frame = new_frame;
-	stack -> num_frames++;
+
+	stack -> size++;
 
 	return new_frame;
 }
@@ -73,7 +74,8 @@ void *LS_pop(LS_stack_t *stack) {
 	free(current_frame);
 
 	stack -> current_frame = frame_below;
-	stack -> num_frames--;
+	
+	stack -> size--;
 
 	return data;
 }

@@ -13,12 +13,46 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <https://www.gnu.org/licenses/>. */
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
-#include <S_consts.h>
-#include <S_strip.h>
+#include <LS_string.h>
+
+int test(size_t test_size) {
+	char string[test_size + 1];
+
+	bool has_space = false;
+
+	for(size_t i = 0; i < test_size; i++) {
+		char strch = ' ' + (char) (rand() % ('~' - ' '));
+		if(strch == ' ') has_space = true;
+
+		string[i] = strch;
+	}
+
+	string[test_size] = 0;
+
+	printf("strlen(string): %zu\n\n", strlen(string));
+
+	printf("stripped = LS_strip(string);\n\n");
+	char *stripped = LS_strip(string);
+
+	printf("string: %s\n", string);
+	printf("stripped: %s\n\n", stripped);
+
+	bool result = LS_streq(string, stripped);
+
+	printf("streq(string, stripped): %s\n", result ? "true" : "false");
+
+	free(stripped);
+
+	if(result != has_space) return 1;
+
+	return 0;
+}
 
 int main(int argc, char **argv) {
 	if(argc > 1) {
@@ -29,23 +63,18 @@ int main(int argc, char **argv) {
 	time_t now;
 	srand((unsigned) time(&now));
 
-	while(1) {
-		char string[S_BUFSIZE];
+	for(size_t i = 1; i < 100; i++) {
+		int ret = test(i);
 
-		for(size_t i = 0; i < S_BUFSIZE - 1; i++) {
-			string[i] = ' ' + (char) (rand() % ('~' - ' '));
+		if(ret == 2) {
+			printf("%s: Error: Library is faulty.\n", argv[0]);
+			return 2;
 		}
 
-		string[S_BUFSIZE - 1] = 0;
-
-		printf("Random String:\n\n");
-		printf("%s\n\n", string);
-
-		S_strip(string);
-
-		printf("Stripped String:\n\n");
-		printf("%s\n\n", string);
+		printf("\n");
 	}
+
+	printf("%s: Library functions correctly.\n", argv[0]);
 
 	return 0;
 }

@@ -43,7 +43,7 @@ void S_handle_sigint(int signum) {
 	signal(SIGINT, SIG_IGN);
 	signal(SIGINT, S_handle_sigint);
 
-	char *message = "\nTo exit, type the command 'exit' at the prompt.\n ";
+	char *message = "\nTo exit, type the command 'exit();' at the prompt.\n ";
 	write(S_STDOUT, message, _S_strlen(message));
 
 	return;

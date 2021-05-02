@@ -28,13 +28,12 @@ typedef struct _LS_sframe_s {
 typedef struct {
 	LS_sframe_t *current_frame;
 
-	size_t num_frames;
+	size_t size;
 
 } LS_stack_t;
 
 extern LS_stack_t *LS_alloc_stack();
 extern void LS_free_stack(LS_stack_t *stack);
-extern size_t LS_sizeof_stack(LS_stack_t *stack);
 
 extern LS_sframe_t *LS_push(LS_stack_t *stack, void *data);
 extern void *LS_pop(LS_stack_t *stack);

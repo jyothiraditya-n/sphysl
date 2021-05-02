@@ -13,45 +13,49 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <https://www.gnu.org/licenses/>. */
 
+#include <ctype.h>
+#include <stdbool.h>
 #include <stddef.h>
-#include <pthread.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include <LS_pipe.h>
+#include <LS_string.h>
 
-#ifndef LS_QUEUE_H
-#define LS_QUEUE_H
+bool LS_streq(const char *str1, const char *str2) {
+	size_t strlength = strlen(str1);
+	if(strlength != strlen(str2)) return false;
 
-typedef struct {
-	int (*func)(void *);
-	void *arg;
+	size_t i = 0;
+	char str1ch = str1[0];
 
-} LS_qtask_t;
+	while(str1ch) {
+		if(str1ch != str2[i]) return false;
 
-typedef struct {
-	LS_pipe_t *pipe;
+		i++;
+		str1ch = str1[i];
+	}
 
-	pthread_t thread;
+	return true;
+}
 
-	LS_qtask_t err_task;
+char *LS_strip(const char *source) {
+	size_t length = strlen(source);
 
-	size_t size;
+	char *dest = malloc(length);
 
-	int err_func_ret;
-	int pthreadc_ret;
-	int pthreadj_ret;
+	size_t i = 0;
+	size_t j = 0;
 
-} LS_queue_t;
+	while(j < length) {
+		if(!isspace(source[j])) {
+			dest[i] = source[j];
+			i++;
+		}
 
-extern LS_queue_t *LS_alloc_queue();
-extern void LS_free_queue(LS_queue_t *queue);
+		j++;
+	}
 
-extern LS_qtask_t *LS_enqueue(LS_queue_t *queue, int (*func)(void *),
-	void *arg);
+	dest[i] = 0;
 
-extern int LS_do(LS_queue_t *queue);
-extern void *_LS_do(void *arg);
-
-extern int LS_start(LS_queue_t *queue);
-extern int LS_wait4(LS_queue_t *queue);
-
-#endif
+	return dest;
+}

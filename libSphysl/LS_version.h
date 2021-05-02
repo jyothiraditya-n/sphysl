@@ -1,4 +1,4 @@
-/* The Unsystematicaliser Physics Simulator (C) 2021 Jyothiraditya Nellakra
+/* The Simple Physics Simulation Language (C) 2021 Jyothiraditya Nellakra
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -13,29 +13,10 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <https://www.gnu.org/licenses/>. */
 
-#include <ctype.h>
-#include <stddef.h>
-#include <string.h>
+#ifndef LS_VERSION_H
+#define LS_VERSION_H
 
-#include <S_strip.h>
+#define LS_VERSION 0
+#define LS_SUBVERSION 0
 
-void S_strip(char *string) {
-	size_t length = strlen(string);
-	if(length == 0) return;
-
-	size_t i = 0;
-	size_t j = 0;
-
-	while(j < length) {
-		if(!isspace(string[j])) {
-			string[i] = string[j];
-			i++;
-		}
-
-		j++;
-	}
-
-	string[i] = 0;
-
-	return;
-}
+#endif

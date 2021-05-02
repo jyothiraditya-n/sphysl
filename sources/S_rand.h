@@ -1,4 +1,4 @@
-/* The Unsystematicaliser Physics Simulator (C) 2021 Jyothiraditya Nellakra
+/* The Simple Physics Simulation Language (C) 2021 Jyothiraditya Nellakra
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -13,9 +13,24 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <https://www.gnu.org/licenses/>. */
 
-#ifndef S_STRIP_H
-#define S_STRIP_H
+#include <stdint.h>
+#include <stdlib.h>
 
-extern void S_strip(char *string);
+#ifndef S_RAND_H
+
+#if UINTPTR_MAX == 0xFFFFFFFF
+
+#define S_rand() ((size_t) rand())
+
+#elif UINTPTR_MAX == 0xFFFFFFFFFFFFFFFF
+
+#define S_rand() ((size_t) rand() + ((size_t) rand() << 32))
+
+#endif
+
+#define S_rand_in(lim1, lim2) (lim1 + (S_rand() % (lim2 - lim1)))
+
+#define S_randp() (void *) S_rand()
+#define S_randp_in(lim1, lim2) (void *) S_rand_in(lim1, lim2)
 
 #endif

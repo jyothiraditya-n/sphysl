@@ -24,7 +24,8 @@ LS_pipe_t *LS_alloc_pipe() {
 
 	pipe -> in_frame = 0;
 	pipe -> out_frame = 0;
-	pipe -> num_frames = 0;
+
+	pipe -> size = 0;
 
 	return pipe;
 }
@@ -41,30 +42,27 @@ void LS_free_pipe(LS_pipe_t *pipe) {
 		current_frame = frame_ahead;
 	}
 
-	pipe -> in_frame = 0;
-	pipe -> out_frame = 0;
-	pipe -> num_frames = 0;
+	free(pipe);
 	
 	return;
-}
-
-size_t LS_sizeof_pipe(LS_pipe_t *pipe) {
-	return pipe -> num_frames;
 }
 
 LS_pframe_t *LS_pipe(LS_pipe_t *pipe, void *data) {
 	LS_pframe_t *new_frame = malloc(sizeof(LS_pframe_t));
 	if(!new_frame) return 0;
 
-	if(pipe -> in_frame) pipe -> in_frame -> frame_behind = new_frame;
+	LS_pframe_t *in_frame = pipe -> in_frame;
+	if(in_frame) in_frame -> frame_behind = new_frame;
 
-	new_frame -> frame_ahead = pipe -> in_frame;
+	new_frame -> frame_ahead = in_frame;
 	new_frame -> frame_behind = 0;
+
 	new_frame -> data = data;
 
 	pipe -> in_frame = new_frame;
 	if(!pipe -> out_frame) pipe -> out_frame = new_frame;
-	pipe -> num_frames++;
+
+	pipe -> size++;
 
 	return new_frame;
 }
@@ -82,13 +80,15 @@ void *LS_pull(LS_pipe_t *pipe) {
 		frame_behind -> frame_ahead = 0;
 
 		pipe -> out_frame = frame_behind;
-		pipe -> num_frames--;
+
+		pipe -> size--;
 	}
 
 	else {
 		pipe -> in_frame = 0;
 		pipe -> out_frame = 0;
-		pipe -> num_frames = 0;
+
+		pipe -> size = 0;
 	}
 
 	return data;

@@ -16,11 +16,10 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include <LS_streq.h>
+#include <LS_string.h>
 
 #include <S_consts.h>
 #include <S_main.h>
-#include <S_strip.h>
 
 #include <S_shell.h>
 
@@ -32,8 +31,9 @@ void S_shell() {
 
 		char input[S_BUFSIZE];
 		fgets(input, S_BUFSIZE, stdin);
-		S_strip(input);
 
-		if(LS_streq(input, "exit")) exit_condition = true;
+		char *command = LS_strip(input);
+
+		if(LS_streq(command, "exit();")) exit_condition = true;
 	}
 }

@@ -30,13 +30,12 @@ typedef struct {
 	LS_pframe_t *in_frame;
 	LS_pframe_t *out_frame;
 
-	size_t num_frames;
+	size_t size;
 
 } LS_pipe_t;
 
 extern LS_pipe_t *LS_alloc_pipe();
 extern void LS_free_pipe(LS_pipe_t *pipe);
-extern size_t LS_sizeof_pipe(LS_pipe_t *pipe);
 
 extern LS_pframe_t *LS_pipe(LS_pipe_t *pipe, void *data);
 extern void *LS_pull(LS_pipe_t *pipe);

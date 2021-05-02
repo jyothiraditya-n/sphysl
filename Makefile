@@ -21,22 +21,39 @@ EXT ?=
 
 LD ?= ld
 
-CLEAN += $(foreach obj,$(wildcard *.o) $(wildcard sources/*.o),rm $(obj);)
+CLEAN += $(foreach obj,$(wildcard *.o sources/*.o tests/*.o),rm $(obj);)
 
 DEEP_CLEAN += $(foreach pdf,$(wildcard *.pdf),rm $(pdf);)
 DEEP_CLEAN += $(foreach lib,$(wildcard *.a),rm $(lib);)
 
-objs += $(patsubst %.c,%.o,$(wildcard *.c) $(wildcard sources/*.c))
+objs += $(patsubst %.c,%.o,$(wildcard *.c sources/*.c tests/*.c))
 progs += $(patsubst %.c,%$(EXT),$(wildcard *.c))
+
+tests += $(patsubst tests/%.c,%_tests$(EXT),$(wildcard tests/*.c))
+
+TEST = $(patsubst %,./% &&,$(tests))
+TEST += true
+
 libs += -lSphysl -lpthread
 
-existing_progs += $(foreach prog,$(progs),$(wildcard $(prog)))
+existing_progs += $(foreach prog,$(progs) $(tests),$(wildcard $(prog)))
 
 DEEP_CLEAN += $(foreach prog,$(existing_progs),rm $(prog);)
 
-.PHONY : all clean deep-clean
+.PHONY : all run test document clean deep-clean
 
-all : $(progs)
+all : $(progs) $(tests)
+	cd docs; make; cd ..
+	mv docs/*.pdf ./
+	rename -e 's/.pdf/-docs.pdf/g' *
+
+run : $(progs)
+	./sphysl
+
+test : $(tests)
+	$(TEST)
+
+document :
 	cd docs; make; cd ..
 	mv docs/*.pdf ./
 	rename -e 's/.pdf/-docs.pdf/g' *
@@ -52,6 +69,9 @@ deep-clean : clean
 	-$(DEEP_CLEAN)
 
 $(progs) : %$(EXT) : %.o sources.o libSphysl.a
+	$(CC) $(CFLAGS) $< sources.o -o $@ $(libs)
+
+$(tests) : %_tests$(EXT) : tests/%.o sources.o libSphysl.a
 	$(CC) $(CFLAGS) $< sources.o -o $@ $(libs)
 
 $(objs) : %.o : %.c
